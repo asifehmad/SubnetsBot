@@ -48,8 +48,14 @@ class DCABot:
         try:
             self.wallet = bt.wallet(name=self.config.wallet)
             password = os.environ.get("WALLET_PASSWORD")
+            if not password:
+                # Prompt for password if not in environment (safer)
+                import getpass
+                password = getpass.getpass("🔐 Enter wallet password: ")
             if password:
                 self.wallet.coldkey_file.save_password_to_env(password)
+                # Clear password from memory
+                del password
             self.wallet.unlock_coldkey()
             console.print(f"✅ Wallet '{self.config.wallet}' loaded successfully")
         except Exception as e:
