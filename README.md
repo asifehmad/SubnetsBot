@@ -120,14 +120,6 @@ interval_minutes: 5     # Minutes between purchases
 min_balance: 0.5       # Stop when wallet balance hits this
 ```
 
-### Popular Subnets
-- `1`: Text Prompting subnet
-- `3`: Conversational AI subnet
-- `5`: Open Kaito subnet
-- `7`: Mining subnet
-- `9`: Pretraining subnet
-- `11`: Writing subnet
-
 ### Strategy Examples
 
 **Conservative (Long-term)**:
