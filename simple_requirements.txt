@@ -1,0 +1,13 @@
+# Minimal requirements for DCA Bot
+# Only essential dependencies for simple alpha DCA
+
+# Core Bittensor dependencies
+bittensor>=9.0.0
+
+# Data processing
+pyyaml>=6.0
+
+# Rich console output for beautiful logs
+rich>=13.0.0
+
+# Note: Make sure your Python version is 3.8 or higher 

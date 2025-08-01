@@ -1,0 +1,60 @@
+# Simple DCA Bot Configuration
+# Dollar Cost Averaging for a single subnet
+
+# === Wallet Configuration ===
+wallet: "default"  # Your Bittensor wallet name
+validator: "your_validator_hotkey_ss58_here"  # Replace with your validator's hotkey SS58 address
+
+# === Target Subnet ===
+target_netuid: 1  # The subnet you want to DCA into (change this to your desired subnet)
+
+# === DCA Strategy Settings ===
+purchase_amount: 0.01  # Fixed TAO amount to buy each interval
+interval_minutes: 5    # How often to buy (in minutes)
+min_balance: 0.5       # Stop buying when wallet balance hits this threshold (in TAO)
+
+# ===================================================================
+# CONFIGURATION NOTES:
+# ===================================================================
+# 
+# 1. REPLACE 'your_validator_hotkey_ss58_here' with your actual validator hotkey
+# 
+# 2. TARGET SUBNET: Set 'target_netuid' to the subnet you want to DCA into
+#    Popular subnets:
+#    - 1: Text Prompting subnet
+#    - 3: Conversational AI subnet  
+#    - 5: Open Kaito subnet
+#    - 7: Mining subnet
+#    - 9: Pretraining subnet
+#    - 11: Writing subnet
+# 
+# 3. PURCHASE AMOUNT: Start with small amounts like 0.01-0.1 TAO for testing
+# 
+# 4. INTERVAL: 5 minutes is a good starting point. You can adjust based on:
+#    - Network activity
+#    - Your risk tolerance  
+#    - Available time to monitor
+# 
+# 5. MIN BALANCE: Keep enough TAO for network fees and other operations
+#    Recommended: 0.5-1.0 TAO minimum balance
+# 
+# ===================================================================
+# EXAMPLE SETTINGS FOR DIFFERENT STRATEGIES:
+# ===================================================================
+# 
+# Conservative DCA:
+# purchase_amount: 0.01
+# interval_minutes: 15
+# min_balance: 1.0
+# 
+# Aggressive DCA:
+# purchase_amount: 0.1  
+# interval_minutes: 3
+# min_balance: 0.5
+# 
+# Long-term DCA:
+# purchase_amount: 0.05
+# interval_minutes: 60  # 1 hour
+# min_balance: 2.0
+# 
+# =================================================================== 
