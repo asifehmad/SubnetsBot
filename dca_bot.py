@@ -75,45 +75,80 @@ class DCABot:
         return True
     
     async def get_wallet_balance(self):
-        """Get current wallet balance."""
-        return float(await self.sub.get_balance(self.wallet.coldkey.ss58_address))
+        """Get current wallet balance with retry logic."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                return float(await self.sub.get_balance(self.wallet.coldkey.ss58_address))
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    console.print(f"⚠️ Error getting wallet balance (attempt {attempt + 1}/{max_retries}): {e}")
+                    await asyncio.sleep(5)
+                    continue
+                else:
+                    raise e
     
     async def get_subnet_info(self):
-        """Get information about the target subnet."""
-        subnets = await self.sub.all_subnets()
-        for subnet in subnets:
-            if subnet.netuid == self.config.target_netuid:
-                return subnet
-        return None
+        """Get information about the target subnet with retry logic."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                subnets = await self.sub.all_subnets()
+                for subnet in subnets:
+                    if subnet.netuid == self.config.target_netuid:
+                        return subnet
+                return None
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    console.print(f"⚠️ Error getting subnet info (attempt {attempt + 1}/{max_retries}): {e}")
+                    await asyncio.sleep(5)
+                    continue
+                else:
+                    raise e
     
     async def buy_alpha(self, amount_tao):
-        """Buy alpha in the target subnet."""
-        try:
-            result = await self.sub.add_stake(
-                wallet=self.wallet,
-                hotkey_ss58=self.config.validator,
-                netuid=self.config.target_netuid,
-                amount=bt.Balance.from_tao(amount_tao),
-                wait_for_inclusion=False,
-                wait_for_finalization=False
-            )
-            return True
-        except Exception as e:
-            console.print(f"❌ Error buying alpha: {e}")
-            return False
+        """Buy alpha in the target subnet with retry logic."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                result = await self.sub.add_stake(
+                    wallet=self.wallet,
+                    hotkey_ss58=self.config.validator,
+                    netuid=self.config.target_netuid,
+                    amount=bt.Balance.from_tao(amount_tao),
+                    wait_for_inclusion=False,
+                    wait_for_finalization=False
+                )
+                return True
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    console.print(f"⚠️ Error buying alpha (attempt {attempt + 1}/{max_retries}): {e}")
+                    await asyncio.sleep(10)  # Longer wait for transaction retries
+                    continue
+                else:
+                    console.print(f"❌ Failed to buy alpha after {max_retries} attempts: {e}")
+                    return False
     
     async def get_current_holdings(self):
-        """Get current alpha holdings in the target subnet."""
-        try:
-            stake_info = await self.sub.get_stake_for_coldkey(coldkey_ss58=self.wallet.coldkeypub.ss58_address)
-            for stake in stake_info:
-                if stake.netuid == self.config.target_netuid and stake.hotkey_ss58 == self.config.validator:
-                    return float(stake.stake)
-            return 0.0
-        except Exception:
-            return 0.0
+        """Get current alpha holdings in the target subnet with retry logic."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                stake_info = await self.sub.get_stake_for_coldkey(coldkey_ss58=self.wallet.coldkeypub.ss58_address)
+                for stake in stake_info:
+                    if stake.netuid == self.config.target_netuid and stake.hotkey_ss58 == self.config.validator:
+                        return float(stake.stake)
+                return 0.0
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    console.print(f"⚠️ Error getting holdings (attempt {attempt + 1}/{max_retries}): {e}")
+                    await asyncio.sleep(5)
+                    continue
+                else:
+                    console.print(f"❌ Failed to get holdings after {max_retries} attempts: {e}")
+                    return 0.0
     
-    def log_trade(self, amount_tao, alpha_price, alpha_amount, wallet_balance):
+    def log_trade(self, amount_tao, alpha_price, alpha_amount, wallet_balance, total_holdings):
         """Log a trade transaction."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         trade_record = {
@@ -130,10 +165,16 @@ class DCABot:
         self.total_alpha_bought += alpha_amount
         self.trades_count += 1
         
-        # Console log
+        # Calculate running averages
+        avg_price = self.calculate_average_price()
+        
+        # Console log with enhanced information
         console.print(f"🟢 TRADE #{self.trades_count} | {timestamp}")
         console.print(f"   💰 Bought: {alpha_amount:.6f} alpha for {amount_tao:.4f} TAO")
         console.print(f"   📊 Price: {alpha_price:.6f} TAO per alpha")
+        console.print(f"   📈 Avg Price: {avg_price:.6f} TAO per alpha")
+        console.print(f"   💎 Total Invested: {self.total_tao_invested:.6f} TAO")
+        console.print(f"   🪙 Total Holdings: {total_holdings:.6f} alpha")
         console.print(f"   💳 Wallet Balance: {wallet_balance:.4f} TAO")
         console.print("─" * 60)
     
@@ -215,9 +256,10 @@ class DCABot:
             success = await self.buy_alpha(self.config.purchase_amount)
             
             if success:
-                # Update balance after purchase
+                # Update balance and holdings after purchase
                 wallet_balance = await self.get_wallet_balance()
-                self.log_trade(self.config.purchase_amount, alpha_price, alpha_amount, wallet_balance)
+                total_holdings = await self.get_current_holdings()
+                self.log_trade(self.config.purchase_amount, alpha_price, alpha_amount, wallet_balance, total_holdings)
             else:
                 console.print("❌ Purchase failed")
             
@@ -225,7 +267,22 @@ class DCABot:
             
         except Exception as e:
             console.print(f"❌ Error in DCA cycle: {e}")
-            return True  # Continue running unless it's a critical error
+            console.print("🔄 Attempting to reconnect to network...")
+            
+            # Try to reconnect to the network
+            try:
+                if self.sub:
+                    await self.sub.close()
+                await asyncio.sleep(10)  # Wait before reconnecting
+                self.sub = bt.async_subtensor()
+                await self.sub.initialize()
+                current_block = await self.sub.get_current_block()
+                console.print(f"✅ Reconnected to network (Block: {current_block})")
+                return True  # Continue running after successful reconnection
+            except Exception as reconnect_error:
+                console.print(f"❌ Failed to reconnect: {reconnect_error}")
+                console.print("⏳ Will retry in next cycle...")
+                return True  # Continue running, will retry in next cycle
     
     async def run(self):
         """Main bot loop."""

@@ -7,8 +7,10 @@ A straightforward Dollar Cost Averaging (DCA) bot for Bittensor subnet alpha tok
 - **DCA Strategy**: Buys a fixed TAO amount (e.g., 0.01 TAO) at regular intervals (e.g., every 5 minutes)
 - **Single Subnet Focus**: Concentrates on one subnet you choose
 - **Smart Stopping**: Automatically stops when wallet balance hits your minimum threshold
-- **Detailed Logging**: Shows every purchase with timestamp, amount, and price
-- **Session Summary**: Provides complete analytics when stopped (average price, total invested, etc.)
+- **Enhanced Logging**: Shows every purchase with real-time session statistics
+- **Session Analytics**: Average price, total invested, and current holdings after each trade
+- **Network Resilience**: Auto-reconnects and retries on connection issues
+- **Session Summary**: Provides complete analytics when stopped
 
 ## 📋 Quick Setup
 
@@ -68,6 +70,9 @@ DCA Bot Configuration
 🟢 TRADE #1 | 2024-01-15 14:30:25
    💰 Bought: 0.018182 alpha for 0.0100 TAO
    📊 Price: 0.550000 TAO per alpha
+   📈 Avg Price: 0.550000 TAO per alpha
+   💎 Total Invested: 0.010000 TAO
+   🪙 Total Holdings: 0.143182 alpha
    💳 Wallet Balance: 5.2400 TAO
 ────────────────────────────────────────────────────────────
 ⏳ Waiting 5 minutes until next purchase...
@@ -96,7 +101,13 @@ The bot automatically stops and shows a summary when:
 📋 Trade History
 # 1 | 2024-01-15 14:30:25 | 0.018182 alpha @ 0.550000 TAO | Spent: 0.0100 TAO
 # 2 | 2024-01-15 14:35:25 | 0.018519 alpha @ 0.540000 TAO | Spent: 0.0100 TAO
+# 3 | 2024-01-15 14:40:25 | 0.018182 alpha @ 0.550000 TAO | Spent: 0.0100 TAO
 ...
+
+Session-Only Calculations:
+📈 Average Price: Based only on trades made in this session
+💎 Total Invested: TAO spent in current session only
+🪙 Total Holdings: Your complete subnet position (includes previous holdings)
 ```
 
 ## ⚙️ Configuration Options
@@ -197,11 +208,24 @@ min_balance: 2.0
 - ⚠️ **Shared servers**: Use manual password entry only
 - 🚫 **Avoid env vars**: On rented/shared infrastructure like DATA Crunch
 
-## 🛡️ Safety Features
+## 🛡️ Safety & Reliability Features
 
+### **Network Resilience**
+- 🔄 **Auto-reconnection**: Reconnects automatically if connection drops
+- 🔁 **Retry Logic**: 3 attempts for all network operations with smart delays
+- 💪 **Continuous Operation**: Bot keeps running through network hiccups
+- ⚡ **Smart Recovery**: Graceful error handling without stopping the process
+
+### **Enhanced Monitoring**
+- 📊 **Real-time Stats**: Session average price and total invested after each trade
+- 🪙 **Live Holdings**: Shows your current total alpha position in the subnet
+- 📈 **Session Analytics**: Running calculations based only on current session trades
+- 💳 **Balance Tracking**: Continuous wallet balance monitoring
+
+### **General Safety**
 - ✅ Automatic stopping when balance is low
 - ✅ Graceful shutdown with Ctrl+C
-- ✅ Comprehensive trade logging
+- ✅ Comprehensive trade logging with session statistics
 - ✅ Session summaries with all transaction details
 - ✅ Error handling and recovery
 - ✅ Secure password handling with memory cleanup
