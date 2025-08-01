@@ -250,6 +250,13 @@ class DCABot:
             alpha_price = float(subnet_info.price)
             alpha_amount = self.config.purchase_amount / alpha_price
             
+            # Check price threshold if configured
+            if hasattr(self.config, 'max_price_threshold') and self.config.max_price_threshold > 0:
+                if alpha_price > self.config.max_price_threshold:
+                    console.print(f"⏸️  Price too high: {alpha_price:.6f} TAO > {self.config.max_price_threshold:.6f} TAO threshold")
+                    console.print(f"   💡 Waiting for better price. Current: {alpha_price:.6f} TAO, Target: ≤{self.config.max_price_threshold:.6f} TAO")
+                    return True  # Continue running, just skip this purchase
+            
             console.print(f"🔄 Attempting purchase: {self.config.purchase_amount:.4f} TAO → {alpha_amount:.6f} alpha @ {alpha_price:.6f} TAO/alpha")
             
             # Execute the purchase
@@ -289,12 +296,19 @@ class DCABot:
         if not await self.initialize():
             return
         
-        # Print initial configuration
+                # Print initial configuration
+        price_filter_text = ""
+        if hasattr(self.config, 'max_price_threshold') and self.config.max_price_threshold > 0:
+            price_filter_text = f"💲 Max Price: {self.config.max_price_threshold:.6f} TAO per alpha\n"
+        else:
+            price_filter_text = f"💲 Max Price: No limit (buy at any price)\n"
+            
         console.print(Panel(
             f"🎯 Target Subnet: {self.config.target_netuid}\n"
             f"💰 Purchase Amount: {self.config.purchase_amount:.4f} TAO per trade\n"
             f"⏰ Interval: {self.config.interval_minutes} minutes\n"
             f"🛑 Stop Balance: {self.config.min_balance:.4f} TAO\n"
+            f"{price_filter_text}"
             f"🔑 Validator: {self.config.validator}",
             title="DCA Bot Configuration",
             style="bold cyan"

@@ -12,6 +12,7 @@ target_netuid: 1  # The subnet you want to DCA into (change this to your desired
 purchase_amount: 0.01  # Fixed TAO amount to buy each interval
 interval_minutes: 5    # How often to buy (in minutes)
 min_balance: 0.5       # Stop buying when wallet balance hits this threshold (in TAO)
+max_price_threshold: 0.05  # Only buy if alpha price is at or below this value (in TAO)
 
 # ===================================================================
 # CONFIGURATION NOTES:
@@ -37,24 +38,34 @@ min_balance: 0.5       # Stop buying when wallet balance hits this threshold (in
 # 
 # 5. MIN BALANCE: Keep enough TAO for network fees and other operations
 #    Recommended: 0.5-1.0 TAO minimum balance
+#
+# 6. MAX PRICE THRESHOLD: Only buy when alpha price is at or below this value
+#    - Set to 0.0 to disable price filtering (buy at any price)
+#    - Recommended: Research historical prices and set reasonable threshold
 # 
 # ===================================================================
 # EXAMPLE SETTINGS FOR DIFFERENT STRATEGIES:
 # ===================================================================
 # 
-# Conservative DCA:
+# Conservative DCA (price-sensitive):
 # purchase_amount: 0.01
 # interval_minutes: 15
 # min_balance: 1.0
+# max_price_threshold: 0.03  # Only buy below 0.03 TAO
 # 
-# Aggressive DCA:
+# Aggressive DCA (higher price tolerance):
 # purchase_amount: 0.1  
 # interval_minutes: 3
 # min_balance: 0.5
+# max_price_threshold: 0.08  # Buy up to 0.08 TAO
 # 
-# Long-term DCA:
+# Value Hunter DCA (strict price limits):
 # purchase_amount: 0.05
-# interval_minutes: 60  # 1 hour
+# interval_minutes: 30
 # min_balance: 2.0
+# max_price_threshold: 0.025  # Only buy very cheap alpha
+#
+# No Price Filter (time-based only):
+# max_price_threshold: 0.0  # Disabled - buy at any price
 # 
 # =================================================================== 

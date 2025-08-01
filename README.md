@@ -4,7 +4,8 @@ A straightforward Dollar Cost Averaging (DCA) bot for Bittensor subnet alpha tok
 
 ## 🚀 What It Does
 
-- **DCA Strategy**: Buys a fixed TAO amount (e.g., 0.01 TAO) at regular intervals (e.g., every 5 minutes)
+- **Smart DCA Strategy**: Buys a fixed TAO amount (e.g., 0.01 TAO) at regular intervals (e.g., every 5 minutes)
+- **Price-Based Filtering**: Only buys when alpha price is at or below your threshold (e.g., ≤0.05 TAO)
 - **Single Subnet Focus**: Concentrates on one subnet you choose
 - **Smart Stopping**: Automatically stops when wallet balance hits your minimum threshold
 - **Enhanced Logging**: Shows every purchase with real-time session statistics
@@ -28,6 +29,7 @@ A straightforward Dollar Cost Averaging (DCA) bot for Bittensor subnet alpha tok
    purchase_amount: 0.01     # TAO amount per purchase
    interval_minutes: 5       # How often to buy
    min_balance: 0.5         # Stop when wallet hits this balance
+   max_price_threshold: 0.05 # Only buy if price ≤ 0.05 TAO per alpha
    ```
 
 3. **Run the bot**:
@@ -60,13 +62,18 @@ DCA Bot Configuration
 💰 Purchase Amount: 0.0100 TAO per trade
 ⏰ Interval: 5 minutes
 🛑 Stop Balance: 0.5000 TAO
+💲 Max Price: 0.050000 TAO per alpha
 🔑 Validator: 5HYjn...
 
 💳 Starting Wallet Balance: 5.2500 TAO
 🪙 Current Alpha Holdings: 0.125000 alpha
 ────────────────────────────────────────────────────────────
 
-🔄 Attempting purchase: 0.0100 TAO → 0.018182 alpha @ 0.550000 TAO/alpha
+⏸️  Price too high: 0.550000 TAO > 0.050000 TAO threshold
+   💡 Waiting for better price. Current: 0.550000 TAO, Target: ≤0.050000 TAO
+⏳ Waiting 5 minutes until next purchase...
+
+🔄 Attempting purchase: 0.0100 TAO → 0.200000 alpha @ 0.050000 TAO/alpha
 🟢 TRADE #1 | 2024-01-15 14:30:25
    💰 Bought: 0.018182 alpha for 0.0100 TAO
    📊 Price: 0.550000 TAO per alpha
@@ -118,29 +125,41 @@ target_netuid: 1        # Which subnet to buy alpha in
 purchase_amount: 0.01   # TAO amount per purchase
 interval_minutes: 5     # Minutes between purchases
 min_balance: 0.5       # Stop when wallet balance hits this
+max_price_threshold: 0.05  # Only buy if price is ≤ this value (0.0 = no limit)
 ```
 
 ### Strategy Examples
 
-**Conservative (Long-term)**:
+**Conservative Price-Sensitive DCA**:
 ```yaml
 purchase_amount: 0.01
 interval_minutes: 15
 min_balance: 1.0
+max_price_threshold: 0.03  # Only buy below 0.03 TAO
 ```
 
-**Aggressive (Short-term)**:
+**Aggressive Higher-Price Tolerance**:
 ```yaml
 purchase_amount: 0.1
 interval_minutes: 3
 min_balance: 0.5
+max_price_threshold: 0.08  # Buy up to 0.08 TAO
 ```
 
-**Hourly DCA**:
+**Value Hunter (Strict Price Limits)**:
 ```yaml
 purchase_amount: 0.05
-interval_minutes: 60
+interval_minutes: 30
 min_balance: 2.0
+max_price_threshold: 0.025  # Only buy very cheap alpha
+```
+
+**Time-Based Only (No Price Filter)**:
+```yaml
+purchase_amount: 0.02
+interval_minutes: 10
+min_balance: 1.0
+max_price_threshold: 0.0  # Disabled - buy at any price
 ```
 
 ## 🔧 Troubleshooting
@@ -166,17 +185,21 @@ min_balance: 2.0
 ## 📈 Tips for Success
 
 1. **Start Small**: Begin with 0.01 TAO purchases to test
-2. **Monitor First**: Watch the first few trades to ensure it's working
-3. **Secure Setup**: Use manual password entry, especially on shared servers
-4. **Adjust Intervals**: 5-15 minutes is usually good for most subnets
-5. **Keep Reserves**: Set `min_balance` to keep some TAO for fees
-6. **Track Performance**: Review the session summary to analyze your DCA strategy
+2. **Research Prices**: Check historical alpha prices to set smart thresholds
+3. **Monitor First**: Watch the first few cycles to ensure it's working
+4. **Secure Setup**: Use manual password entry, especially on shared servers
+5. **Price Strategy**: Use `max_price_threshold` to buy only at good prices
+6. **Adjust Intervals**: 5-15 minutes is usually good for most subnets
+7. **Keep Reserves**: Set `min_balance` to keep some TAO for fees
+8. **Track Performance**: Review the session summary to analyze your DCA strategy
 
 ## ⚠️ Important Notes
 
 - **This bot only buys alpha** - it doesn't sell
-- **DCA reduces timing risk** by averaging out price fluctuations
+- **Smart DCA**: Combines time-based AND price-based strategies
+- **Price filtering**: Bot waits for good prices if threshold is set
 - **Always test with small amounts first**
+- **Research price history** to set appropriate thresholds
 - **Monitor your wallet balance** to ensure sufficient funds
 - **The bot will stop automatically** when funds run low
 
