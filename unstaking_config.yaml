@@ -1,0 +1,84 @@
+# Subnet Alpha Unstaking Bot Configuration
+# Sells alpha for TAO when price reaches target levels
+
+# === Wallet Configuration ===
+wallet: "default"  # Your Bittensor wallet name
+validator: "your_validator_hotkey_ss58_here"  # Replace with your validator's hotkey SS58 address
+
+# === Target Subnet ===
+target_netuid: 1  # The subnet you want to sell alpha from (should match your DCA bot)
+
+# === Unstaking Strategy Settings ===
+unstake_amount: 0.1           # Fixed alpha amount to sell each interval
+interval_minutes: 10          # How often to check for selling opportunities (in minutes)
+min_price_threshold: 0.08     # Only sell if alpha price is at or above this value (in TAO)
+min_holdings_threshold: 0.5   # Never sell if it would leave you with less than this amount of alpha
+
+# ===================================================================
+# CONFIGURATION NOTES:
+# ===================================================================
+# 
+# 1. REPLACE 'your_validator_hotkey_ss58_here' with your actual validator hotkey
+# 
+# 2. TARGET SUBNET: Should match the subnet you're DCA'ing into with the other bot
+# 
+# 3. UNSTAKE AMOUNT: How much alpha to sell per transaction
+#    - Start with small amounts like 0.05-0.2 alpha for testing
+#    - Consider your total holdings when setting this
+# 
+# 4. INTERVAL: How often to check selling opportunities
+#    - 10-30 minutes is usually good for monitoring price movements
+#    - More frequent = more responsive but higher resource usage
+# 
+# 5. MIN PRICE THRESHOLD: Only sell when alpha price reaches this level
+#    - Set this higher than your DCA max_price_threshold for profit
+#    - Research historical highs to set realistic targets
+#    - Set to 0.0 to disable price filtering (sell at any price)
+#
+# 6. MIN HOLDINGS THRESHOLD: Prevents selling all your alpha
+#    - Keeps a minimum position for future price appreciation
+#    - Recommended: Keep at least 0.5-2.0 alpha as base holding
+# 
+# ===================================================================
+# EXAMPLE TRADING PAIR STRATEGY:
+# ===================================================================
+#
+# DCA Bot (buy low):
+# - max_price_threshold: 0.05    # Buy below 0.05 TAO
+# - purchase_amount: 0.01 TAO
+#
+# Unstaking Bot (sell high):
+# - min_price_threshold: 0.08    # Sell above 0.08 TAO
+# - unstake_amount: 0.1 alpha
+#
+# This creates a 60% profit margin (0.08/0.05 = 1.6x)
+#
+# ===================================================================
+# STRATEGY EXAMPLES:
+# ===================================================================
+
+# Conservative Profit-Taking:
+# unstake_amount: 0.05
+# interval_minutes: 30
+# min_price_threshold: 0.07     # Moderate profit target
+# min_holdings_threshold: 1.0   # Keep substantial holdings
+
+# Aggressive Selling:
+# unstake_amount: 0.2
+# interval_minutes: 5
+# min_price_threshold: 0.06     # Lower profit target, more frequent
+# min_holdings_threshold: 0.2   # Smaller minimum holding
+
+# Swing Trading:
+# unstake_amount: 0.15
+# interval_minutes: 15
+# min_price_threshold: 0.10     # Wait for significant price spikes
+# min_holdings_threshold: 0.5
+
+# Emergency Selling (no price filter):
+# unstake_amount: 0.1
+# interval_minutes: 5
+# min_price_threshold: 0.0      # Sell at any price
+# min_holdings_threshold: 0.0   # Can sell everything
+
+# =================================================================== 
