@@ -250,7 +250,16 @@ class UnstakingBot:
             current_holdings = await self.get_current_holdings()
             if current_holdings < self.config.unstake_amount:
                 console.print(f"🛑 Insufficient holdings: {current_holdings:.6f} < {self.config.unstake_amount:.6f} alpha needed")
-                console.print(f"   💡 Need at least {self.config.unstake_amount:.6f} alpha to unstake")
+                # console.print(f"   💡 Need at least {self.config.unstake_amount:.6f} alpha to unstake")
+                
+                console.print(f"Selling all the remaining {current_holdings:.6f}")
+                    
+                success = await self.unstake_alpha(current_holdings)
+                    
+                if success:
+                    console.print(f" ✅ Sold all the remaining Alpha below the {self.config.unstake_amount}")
+                else:
+                    console.print("❌ Sale failed")
                 return True  # Continue running, maybe more alpha will be available later
             
             # Check minimum holdings threshold
