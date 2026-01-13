@@ -242,6 +242,7 @@ class UnstakingBot:
             # Check if we should sell based on price threshold
             if hasattr(self.config, 'min_price_threshold') and self.config.min_price_threshold > 0:
                 if alpha_price < self.config.min_price_threshold:
+                    console.print(f"Bot is running for subnet {str(self.config.target_netuid)}")
                     console.print(f"⏸️  Price too low: {alpha_price:.6f} TAO < {self.config.min_price_threshold:.6f} TAO threshold")
                     console.print(f"   💡 Waiting for higher price. Current: {alpha_price:.6f} TAO, Target: ≥{self.config.min_price_threshold:.6f} TAO")
                     return True  # Continue running, just skip this sale
