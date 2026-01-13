@@ -10,7 +10,7 @@ target_netuid: 1  # The subnet you want to sell alpha from (should match your DC
 
 # === Unstaking Strategy Settings ===
 unstake_amount: 0.1           # Fixed alpha amount to sell each interval
-interval_minutes: 10          # How often to check for selling opportunities (in minutes)
+interval_seconds: 10          # How often to check for selling opportunities (in minutes)
 min_price_threshold: 0.08     # Only sell if alpha price is at or above this value (in TAO)
 min_holdings_threshold: 0.5   # Never sell if it would leave you with less than this amount of alpha
 
