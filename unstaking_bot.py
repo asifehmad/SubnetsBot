@@ -325,7 +325,7 @@ class UnstakingBot:
         console.print(Panel(
             f"🎯 Target Subnet: {self.config.target_netuid}\n"
             f"🪙 Unstake Amount: {self.config.unstake_amount:.6f} alpha per trade\n"
-            f"⏰ Interval: {self.config.interval_minutes} minutes\n"
+            f"⏰ Interval: {self.config.interval_seconds} seconds\n"
             f"{price_filter_text}"
             f"{min_holdings_text}"
             f"🔑 Validator: {self.config.validator}",
@@ -348,8 +348,8 @@ class UnstakingBot:
                     break
                 
                 # Wait for next interval
-                console.print(f"⏳ Waiting {self.config.interval_minutes} minutes until next check...")
-                for i in range(self.config.interval_minutes * 60):
+                console.print(f"⏳ Waiting {self.config.interval_seconds} seconds until next check...")
+                for i in range(self.config.interval_seconds):
                     if not self.running:
                         break
                     await asyncio.sleep(1)
