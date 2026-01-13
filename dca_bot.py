@@ -307,7 +307,7 @@ class DCABot:
         console.print(Panel(
             f"🎯 Target Subnet: {self.config.target_netuid}\n"
             f"💰 Purchase Amount: {self.config.purchase_amount:.4f} TAO per trade\n"
-            f"⏰ Interval: {self.config.interval_minutes} minutes\n"
+            f"⏰ Interval: {self.config.interval_seconds} seconds\n"
             f"🛑 Stop Balance: {self.config.min_balance:.4f} TAO\n"
             f"{price_filter_text}"
             f"🔑 Validator: {self.config.validator}",
@@ -330,8 +330,8 @@ class DCABot:
                     break
                 
                 # Wait for next interval
-                console.print(f"⏳ Waiting {self.config.interval_minutes} minutes until next purchase...")
-                for i in range(self.config.interval_minutes * 60):
+                console.print(f"⏳ Waiting {self.config.interval_seconds} seconds until next purchase...")
+                for i in range(self.config.interval_seconds):
                     if not self.running:
                         break
                     await asyncio.sleep(1)
