@@ -253,6 +253,7 @@ class DCABot:
             # Check price threshold if configured
             if hasattr(self.config, 'max_price_threshold') and self.config.max_price_threshold > 0:
                 if alpha_price > self.config.max_price_threshold:
+                    console.print(f"Bot is running for subnet {str(self.config.target_netuid)}")
                     console.print(f"⏸️  Price too high: {alpha_price:.6f} TAO > {self.config.max_price_threshold:.6f} TAO threshold")
                     console.print(f"   💡 Waiting for better price. Current: {alpha_price:.6f} TAO, Target: ≤{self.config.max_price_threshold:.6f} TAO")
                     return True  # Continue running, just skip this purchase
