@@ -10,7 +10,7 @@ target_netuid: 1  # The subnet you want to DCA into (change this to your desired
 
 # === DCA Strategy Settings ===
 purchase_amount: 0.01  # Fixed TAO amount to buy each interval
-interval_minutes: 5    # How often to buy (in minutes)
+interval_seconds: 5    # How often to buy (in seconds)
 min_balance: 0.5       # Stop buying when wallet balance hits this threshold (in TAO)
 max_price_threshold: 0.05  # Only buy if alpha price is at or below this value (in TAO)
 
