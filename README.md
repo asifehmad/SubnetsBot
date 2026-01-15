@@ -43,7 +43,7 @@ Smart selling bot that unstakes alpha when prices reach profit targets.
    validator: "your_validator_hotkey_ss58_here"  # ← REPLACE THIS
    target_netuid: 1          # Choose your subnet
    purchase_amount: 0.01     # TAO amount per purchase
-   interval_minutes: 5       # How often to buy
+   interval_seconds: 5       # How often to buy
    min_balance: 0.5         # Stop when wallet hits this balance
    max_price_threshold: 0.05 # Only buy if price ≤ 0.05 TAO per alpha
    ```
@@ -53,7 +53,7 @@ Smart selling bot that unstakes alpha when prices reach profit targets.
    validator: "your_validator_hotkey_ss58_here"  # ← SAME AS ABOVE
    target_netuid: 1          # Same subnet as DCA bot
    unstake_amount: 0.1       # Alpha amount per sale
-   interval_minutes: 10      # How often to check for selling
+   interval_seconds: 10      # How often to check for selling
    min_price_threshold: 0.08 # Only sell if price ≥ 0.08 TAO per alpha
    min_holdings_threshold: 0.5 # Never sell below this amount
    ```
