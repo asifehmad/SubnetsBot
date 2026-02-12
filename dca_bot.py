@@ -51,6 +51,7 @@ class DCABot:
             if not password:
                 # Prompt for password if not in environment (safer)
                 import getpass
+                console.print(f"Using Wallet '{self.config.wallet}' ")
                 password = getpass.getpass("🔐 Enter wallet password: ")
             if password:
                 self.wallet.coldkey_file.save_password_to_env(password)
