@@ -27,7 +27,7 @@ Smart selling bot that unstakes alpha when prices reach profit targets.
        --target_netuid 1 \
        --purchase_amount 0.01 \
        --interval_seconds 5 \
-       --min_balance 0.5 \
+       --max_tao_investment 5.0 \
        --max_price_threshold 0.05
    ```
 
@@ -60,8 +60,9 @@ python unstaking_bot.py --help
 - `--target_netuid`: Target subnet UID (required)
 - `--purchase_amount`: Fixed TAO amount to buy (required)
 - `--interval_seconds`: Wait time between trades (default: 5)
-- `--min_balance`: Stop buying if wallet TAO balance drops below this (default: 0.5)
+- `--min_balance`: Stop buying if wallet TAO balance drops below this (default: 0.0 = disabled)
 - `--max_price_threshold`: Maximum TAO price per alpha to buy (default: 0.0 = disabled)
+- `--max_tao_investment`: Stop buying when this much total TAO has been invested in this session (default: 0.0 = disabled)
 
 ### Unstaking Bot
 - `--wallet`: Bittensor wallet name (default: "default")

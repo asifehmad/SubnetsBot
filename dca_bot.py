@@ -232,10 +232,17 @@ class DCABot:
             # Check wallet balance
             wallet_balance = await self.get_wallet_balance()
             
+            # Check if we should stop due to max investment reached
+            if hasattr(self.config, 'max_tao_investment') and self.config.max_tao_investment > 0:
+                if self.total_tao_invested + self.config.purchase_amount > self.config.max_tao_investment:
+                    console.print(f"🛑 Stopping: Max TAO investment budget reached ({self.total_tao_invested:.4f} + {self.config.purchase_amount:.4f} > {self.config.max_tao_investment:.4f} TAO)")
+                    return False
+
             # Check if we should stop due to low balance
-            if wallet_balance < self.config.min_balance:
-                console.print(f"🛑 Stopping: Wallet balance ({wallet_balance:.4f} TAO) below minimum ({self.config.min_balance:.4f} TAO)")
-                return False
+            if hasattr(self.config, 'min_balance') and self.config.min_balance > 0:
+                if wallet_balance < self.config.min_balance:
+                    console.print(f"🛑 Stopping: Wallet balance ({wallet_balance:.4f} TAO) below minimum ({self.config.min_balance:.4f} TAO)")
+                    return False
             
             # Check if we have enough for this purchase
             if wallet_balance < self.config.purchase_amount:
@@ -304,12 +311,21 @@ class DCABot:
             price_filter_text = f"💲 Max Price: {self.config.max_price_threshold:.6f} TAO per alpha\n"
         else:
             price_filter_text = f"💲 Max Price: No limit (buy at any price)\n"
+
+        investment_filter_text = ""
+        if hasattr(self.config, 'max_tao_investment') and self.config.max_tao_investment > 0:
+            investment_filter_text = f"🎯 Max Investment Budget: {self.config.max_tao_investment:.4f} TAO\n"
+
+        min_balance_text = ""
+        if hasattr(self.config, 'min_balance') and self.config.min_balance > 0:
+            min_balance_text = f"🛑 Stop Balance: {self.config.min_balance:.4f} TAO\n"
             
         console.print(Panel(
             f"🎯 Target Subnet: {self.config.target_netuid}\n"
             f"💰 Purchase Amount: {self.config.purchase_amount:.4f} TAO per trade\n"
             f"⏰ Interval: {self.config.interval_seconds} seconds\n"
-            f"🛑 Stop Balance: {self.config.min_balance:.4f} TAO\n"
+            f"{min_balance_text}"
+            f"{investment_filter_text}"
             f"{price_filter_text}"
             f"🔑 Validator: {self.config.validator}",
             title="DCA Bot Configuration",
@@ -360,8 +376,9 @@ def parse_args():
     parser.add_argument("--target_netuid", type=int, required=True, help="The subnet you want to DCA into (e.g. 1)")
     parser.add_argument("--purchase_amount", type=float, required=True, help="Fixed TAO amount to buy each interval")
     parser.add_argument("--interval_seconds", type=int, default=5, help="How often to buy (in seconds)")
-    parser.add_argument("--min_balance", type=float, default=0.5, help="Stop buying when wallet balance hits this threshold (in TAO)")
+    parser.add_argument("--min_balance", type=float, default=0.0, help="Stop buying when wallet balance hits this threshold (in TAO. 0.0 to disable)")
     parser.add_argument("--max_price_threshold", type=float, default=0.0, help="Only buy if alpha price is at or below this value (in TAO). 0.0 to disable")
+    parser.add_argument("--max_tao_investment", type=float, default=0.0, help="Maximum total TAO to invest during this session. 0.0 to disable")
     return parser.parse_args()
 
 def signal_handler(bot):
