@@ -13,7 +13,7 @@ A straightforward Dollar Cost Averaging bot that:
 import asyncio
 import os
 import time
-import yaml
+import argparse
 import bittensor as bt
 from datetime import datetime
 from rich.console import Console
@@ -352,18 +352,17 @@ class DCABot:
         """Stop the bot gracefully."""
         self.running = False
 
-def load_config(config_file="dca_config.yaml"):
-    """Load configuration from YAML file."""
-    try:
-        with open(config_file, "r") as f:
-            config = yaml.safe_load(f)
-        return type('Config', (), config)()
-    except FileNotFoundError:
-        console.print(Panel(f"❌ Config file '{config_file}' not found!", title="Error", style="bold red"))
-        return None
-    except Exception as e:
-        console.print(Panel(f"❌ Error loading config: {e}", title="Error", style="bold red"))
-        return None
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Subnet Alpha DCA Bot")
+    parser.add_argument("--wallet", type=str, default="default", help="Bittensor wallet name")
+    parser.add_argument("--validator", type=str, required=True, help="Validator hotkey SS58 address")
+    parser.add_argument("--target_netuid", type=int, required=True, help="The subnet you want to DCA into (e.g. 1)")
+    parser.add_argument("--purchase_amount", type=float, required=True, help="Fixed TAO amount to buy each interval")
+    parser.add_argument("--interval_seconds", type=int, default=5, help="How often to buy (in seconds)")
+    parser.add_argument("--min_balance", type=float, default=0.5, help="Stop buying when wallet balance hits this threshold (in TAO)")
+    parser.add_argument("--max_price_threshold", type=float, default=0.0, help="Only buy if alpha price is at or below this value (in TAO). 0.0 to disable")
+    return parser.parse_args()
 
 def signal_handler(bot):
     """Handle interrupt signals gracefully."""
@@ -377,9 +376,7 @@ async def main():
     console.print(Panel("🤖 Subnet Alpha DCA Bot Starting...", title="Welcome", style="bold green"))
     
     # Load configuration
-    config = load_config("dca_config.yaml")
-    if not config:
-        return
+    config = parse_args()
     
     # Create and run bot
     bot = DCABot(config)

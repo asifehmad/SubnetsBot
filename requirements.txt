@@ -1,5 +1,5 @@
-# Minimal requirements for DCA Bot
-# Only essential dependencies for simple alpha DCA
+# Minimal requirements for the DCA and Unstaking Bot 
+# Only essential dependencies for simple alpha DCA and Unstaking
 
 # Core Bittensor dependencies
 bittensor>=9.0.0

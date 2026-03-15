@@ -16,7 +16,7 @@ Features:
 import asyncio
 import os
 import time
-import yaml
+import argparse
 import bittensor as bt
 from datetime import datetime
 from rich.console import Console
@@ -370,18 +370,17 @@ class UnstakingBot:
         """Stop the bot gracefully."""
         self.running = False
 
-def load_config(config_file="unstaking_config.yaml"):
-    """Load configuration from YAML file."""
-    try:
-        with open(config_file, "r") as f:
-            config = yaml.safe_load(f)
-        return type('Config', (), config)()
-    except FileNotFoundError:
-        console.print(Panel(f"❌ Config file '{config_file}' not found!", title="Error", style="bold red"))
-        return None
-    except Exception as e:
-        console.print(Panel(f"❌ Error loading config: {e}", title="Error", style="bold red"))
-        return None
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Subnet Alpha Unstaking Bot")
+    parser.add_argument("--wallet", type=str, default="default", help="Bittensor wallet name")
+    parser.add_argument("--validator", type=str, required=True, help="Validator hotkey SS58 address")
+    parser.add_argument("--target_netuid", type=int, required=True, help="The subnet you want to sell alpha from (should match your DCA bot)")
+    parser.add_argument("--unstake_amount", type=float, required=True, help="Fixed alpha amount to sell each interval")
+    parser.add_argument("--interval_seconds", type=int, default=10, help="How often to check for selling opportunities (in seconds)")
+    parser.add_argument("--min_price_threshold", type=float, default=0.08, help="Only sell if alpha price is at or above this value (in TAO)")
+    parser.add_argument("--min_holdings_threshold", type=float, default=0.5, help="Never sell if it would leave you with less than this amount of alpha")
+    return parser.parse_args()
 
 def signal_handler(bot):
     """Handle interrupt signals gracefully."""
@@ -395,9 +394,7 @@ async def main():
     console.print(Panel("🤖 Subnet Alpha Unstaking Bot Starting...", title="Welcome", style="bold red"))
     
     # Load configuration
-    config = load_config("unstaking_config.yaml")
-    if not config:
-        return
+    config = parse_args()
     
     # Create and run bot
     bot = UnstakingBot(config)
