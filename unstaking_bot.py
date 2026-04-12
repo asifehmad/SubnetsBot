@@ -254,6 +254,8 @@ class UnstakingBot:
             # Check current holdings
             current_holdings = await self.get_current_holdings()
             if current_holdings < self.config.unstake_amount:
+                if not self.running:
+                    return True
                 console.print(
                     f"🛑 Insufficient holdings: {current_holdings:.6f} < {self.config.unstake_amount:.6f} alpha needed")
                 # console.print(f"   💡 Need at least {self.config.unstake_amount:.6f} alpha to unstake")
